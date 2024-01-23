@@ -161,7 +161,7 @@ class MyNet(nn.Module):
         return output
 
 
-class AdaptiveWeight(nn.Module):
+class AdaptiveWeight(nn.Module):  # 输入是形状为 (batch_size, channels * sequence_length) 的二维张量
     def __init__(self, plances=32):
         super(AdaptiveWeight, self).__init__()
 
@@ -170,9 +170,9 @@ class AdaptiveWeight(nn.Module):
         self.sig = nn.Sigmoid()
 
     def forward(self, x):
-        out = self.fc(x)
+        out = self.fc(x)  # 输出为(batch_size, 1) 的二维张量
         # out = self.bn(out)
-        out = self.sig(out)
+        out = self.sig(out) # 输出为(batch_size, 1) 的二维张量
 
         return out
 
@@ -182,14 +182,14 @@ class MyNet6View(nn.Module):
     def __init__(self, num_classes=5):
         super(MyNet6View, self).__init__()
 
-        self.MyNet1 = MyNet(input_channels=1, single_view=True)
+        self.MyNet1 = MyNet(input_channels=1, single_view=True) # 得到一个形状为 (batch_size, channels * sequence_length) 的二维张量
         self.MyNet2 = MyNet(input_channels=2, single_view=True)
         self.MyNet3 = MyNet(input_channels=2, single_view=True)
         self.MyNet4 = MyNet(input_channels=2, single_view=True)
         self.MyNet5 = MyNet(input_channels=2, single_view=True)
         self.MyNet6 = MyNet(input_channels=3, single_view=True)
 
-        self.fuse_weight_1 = AdaptiveWeight(128)
+        self.fuse_weight_1 = AdaptiveWeight(128) # 输出为(batch_size, 1) 的二维张量
         self.fuse_weight_2 = AdaptiveWeight(128)
         self.fuse_weight_3 = AdaptiveWeight(128)
         self.fuse_weight_4 = AdaptiveWeight(128)
@@ -213,8 +213,9 @@ class MyNet6View(nn.Module):
                         self.MyNet4(x[:, 8:10, :]),
                         self.MyNet5(x[:, 10:12, :]),
                         self.MyNet6(torch.cat((x[:, 1:3, :], x[:, 5, :].unsqueeze(1)), dim=1))]
+        # 里面是6个形状为 (batch_size, channels * sequence_length) 的二维张量
 
-        fuse_weight_1 = self.fuse_weight_1(outputs_view[0])
+        fuse_weight_1 = self.fuse_weight_1(outputs_view[0])  # 输出为(batch_size, 1) 的二维张量
         fuse_weight_2 = self.fuse_weight_2(outputs_view[1])
         fuse_weight_3 = self.fuse_weight_3(outputs_view[2])
         fuse_weight_4 = self.fuse_weight_4(outputs_view[3])
