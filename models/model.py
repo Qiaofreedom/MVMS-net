@@ -153,7 +153,7 @@ class MyNet(nn.Module):
 
         output = self.avgpool(output)
 
-        output = output.view(output.size(0), -1)
+        output = output.view(output.size(0), -1) # 得到一个形状为 (batch_size, channels * sequence_length) 的二维张量
 
         if not self.single_view:
             output = self.fc(output)
